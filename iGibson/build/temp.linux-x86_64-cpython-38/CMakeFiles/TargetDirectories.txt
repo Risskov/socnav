@@ -1,0 +1,8 @@
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/rebuild_cache.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/edit_cache.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/test_device.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/query_devices.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/tinyobjloader.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/CMakeFiles/EGLRendererContext.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/pybind11/CMakeFiles/rebuild_cache.dir
+/home/andreas/social-navigation/iGibson/build/temp.linux-x86_64-cpython-38/pybind11/CMakeFiles/edit_cache.dir

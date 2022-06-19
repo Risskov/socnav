@@ -1,0 +1,24 @@
+gym>=0.12
+numpy>=1.16.0
+scipy>=1.2.1
+pybullet>=2.6.4
+transforms3d>=0.3.1
+opencv-python>=3.4.8
+Pillow>=5.4.0
+networkx>=2.0
+PyYAML
+tqdm
+matplotlib
+cloudpickle
+aenum
+GPUtil
+ipython
+pytest
+future
+trimesh
+sphinx_markdown_tables
+sphinx>=1.8.0
+recommonmark
+sphinx_rtd_theme
+Cython
+pyrvo2@ https://github.com/sybrenstuvel/Python-RVO2/archive/master.zip

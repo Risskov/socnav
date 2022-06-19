@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -DVERSION_INFO=\"1.0.1\" -O3 -DNDEBUG  -shared  -o /home/andreas/social-navigation/iGibson/gibson2/render/mesh_renderer/tinyobjloader.cpython-38-x86_64-linux-gnu.so CMakeFiles/tinyobjloader.dir/cpp/tinyobjloader/tiny_obj_loader.cc.o CMakeFiles/tinyobjloader.dir/cpp/tinyobjloader/bindings.cc.o 

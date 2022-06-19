@@ -1,0 +1,1 @@
+/usr/bin/c++  -DVERSION_INFO=\"1.0.1\" -O3 -DNDEBUG  -rdynamic CMakeFiles/query_devices.dir/glad/egl.cpp.o CMakeFiles/query_devices.dir/glad/gl.cpp.o CMakeFiles/query_devices.dir/cpp/query_devices.cpp.o  -o /home/andreas/social-navigation/iGibson/gibson2/render/mesh_renderer/build/query_devices  -ldl -lpthread 
