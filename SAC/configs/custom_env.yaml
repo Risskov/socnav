@@ -35,7 +35,8 @@ goal_format: polar
 num_waypoints: 4
 waypoint_resolution: 1. #0.1
 potential_resolution: 0.1
-max_num_pedestrians: 3 #5
+max_num_pedestrians: 2 #5
+use_orca: false
 orca_radius: 0.5
 orca_max_speed: 0.1
 pedestrian_collision_threshold: 0.3

@@ -17,17 +17,20 @@ def plot_lidar(scan):
 config_filename = "configs/custom_env.yaml"
 config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
 
-config_data['scene_id'] = "H"
-config_data['num_pedestrians'] = 3
+config_data['scene_id'] = "cross_narrow"
+config_data['num_pedestrians'] = 2
 
 env = iGibsonEnv(config_file=config_data, mode="gui")
 p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
 p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=0, cameraPitch=-80, cameraTargetPosition=[0,0,5])
-# model = SAC.load("./models/larger_net_360_scan_1_ped_long", env=env)
-model = SAC.load("./tmp/best_model.zip", env=env)
 
+#model = SAC.load("./models/larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m", env=env)
+model = SAC.load("./tmp/best_model.zip", env=env)
+#model = SAC.load("./tmp/best_model/512net_120scan_123ped_orca_4wp_pot_2te_sde_10m.zip", env=env)
+#print(model.get_parameters())
 #check_env(env)
 # best: sc_narrow_H_no_pot_long_low_reverse_no_peds_rb_no_conv_flatten
+
 episodes = 50
 i = 0
 for _ in range(episodes):
@@ -40,7 +43,7 @@ for _ in range(episodes):
         #action = [-0.666, 0]
         obs, reward, done, info = env.step(action)
         rewards += reward
-        print(obs["pedestrians"])
+        #print(obs["pedestrians"])
 
         if i % 50 == 0:
             #print(obs)

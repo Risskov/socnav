@@ -29,6 +29,8 @@ class SocialNavRandomTask(PointNavRandomTask):
         #self.reward_functions.append(PersonalSpaceReward(self.config))
         self.reward_functions.append(WaypointReward(self.config))
 
+        self.use_orca = self.config.get('use_orca', False)
+
         self.waypoints = []
         self.full_path = [] #test
         self.num_waypoints = self.config.get('num_waypoints', 6)
@@ -170,7 +172,8 @@ class SocialNavRandomTask(PointNavRandomTask):
         :param env: environment instance
         :return: a list of pedestrians
         """
-        self.robot_orca_ped = self.orca_sim.addAgent((0, 0))
+        if self.use_orca:
+            self.robot_orca_ped = self.orca_sim.addAgent((0, 0))
         pedestrians = []
         orca_pedestrians = []
         for i in range(self.num_pedestrians):
@@ -308,8 +311,9 @@ class SocialNavRandomTask(PointNavRandomTask):
             self.target_pos = target_pos
             env.robots[0].set_position_orientation(initial_pos, initial_orn)
 
-        self.orca_sim.setAgentPosition(self.robot_orca_ped,
-                                       tuple(self.initial_pos[0:2]))
+        if self.use_orca:
+            self.orca_sim.setAgentPosition(self.robot_orca_ped, tuple(self.initial_pos[0:2]))
+
         self.reset_pedestrians(env)
         self.personal_space_violation_steps = 0
         self.full_path, _ = self.get_shortest_path(env, entire_path=True)
@@ -399,9 +403,10 @@ class SocialNavRandomTask(PointNavRandomTask):
         :param env: environment instance
         """
         super(SocialNavRandomTask, self).step(env)
-        self.orca_sim.setAgentPosition(
-            self.robot_orca_ped,
-            tuple(env.robots[0].get_position()[0:2]))
+        if self.use_orca:
+            self.orca_sim.setAgentPosition(
+                self.robot_orca_ped,
+                tuple(env.robots[0].get_position()[0:2]))
 
         for i, (ped, orca_ped, waypoints) in \
                 enumerate(zip(self.pedestrians,
@@ -416,7 +421,10 @@ class SocialNavRandomTask(PointNavRandomTask):
                 #waypoints = self.sample_new_target_pos(env, current_pos)
                 #self.pedestrian_waypoints[i] = waypoints
                 self.num_steps_stop[i] = 0
+                self.orca_sim.setAgentPrefVelocity(orca_ped, (0, 0))
                 continue
+                #next_goal = current_pos
+                #return
 
             next_goal = waypoints[0]
             # self.pedestrian_goals[i].set_position(
@@ -606,8 +614,8 @@ class SocialNavRandomTask(PointNavRandomTask):
         ped_positions = [self.global_to_local(env, ped.get_position())[:2] for ped in self.pedestrians]
         ped_positions = [cartesian_to_polar(ped_pos[0], ped_pos[1]) for ped_pos in ped_positions]
         for i in range(self.num_pedestrians, self.max_num_pedestrians):
-            ped_positions.append([10., -3.])
-            #ped_positions.append(ped_positions[i-self.num_pedestrians])
+            #ped_positions.append([10., -3.])
+            ped_positions.append(ped_positions[i-self.num_pedestrians])
         # sort by pedestrian order
         zipped_lists = zip(self.pedestrian_order, ped_positions)
         sorted_zipped_lists = sorted(zipped_lists)

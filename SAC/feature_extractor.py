@@ -47,6 +47,7 @@ class CustomCombinedExtractor(BaseFeaturesExtractor):
 
         # Update the features dim manually
         self._features_dim = total_concat_size
+        #self.lstm = nn.LSTM(input_size=total_concat_size, hidden_size=total_concat_size, num_layers=3)
 
     def forward(self, observations) -> torch.Tensor:
         encoded_tensor_list = []

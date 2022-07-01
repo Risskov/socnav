@@ -29,6 +29,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
           print(self.locals["buffer_actions"])
+          print(self.locals["new_obs"]["pedestrians"])
           #print(self.locals)
           # Retrieve training reward
           x, y = ts2xy(load_results(self.log_dir), 'timesteps')
