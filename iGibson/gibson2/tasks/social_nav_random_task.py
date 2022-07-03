@@ -6,7 +6,7 @@ from gibson2.termination_conditions.pedestrian_collision import PedestrianCollis
 from gibson2.reward_functions.timestep_reward import TimestepReward
 from gibson2.reward_functions.personal_space_reward import PersonalSpaceReward
 from gibson2.reward_functions.waypoint_reward import WaypointReward
-from gibson2.utils.utils import l2_distance, cartesian_to_polar
+from gibson2.utils.utils import l2_distance, cartesian_to_polar, rotate_vector_3d
 
 import pybullet as p
 import numpy as np
@@ -37,17 +37,13 @@ class SocialNavRandomTask(PointNavRandomTask):
         for i in range(self.num_waypoints):
             self.waypoints.append([0,0])
 
-        # Decide on how many pedestrians to load based on scene size
-        # Each pixel is 0.01 square meter
+        # Decide on how many pedestrians
         self.max_num_pedestrians = self.config.get('max_num_pedestrians', 5)
         self.num_pedestrians = self.config.get('num_pedestrians', 1)
         self.pedestrian_order = np.arange(self.max_num_pedestrians)
-        #num_sqrt_meter = env.scene.floor_map[0].nonzero()[0].shape[0] / 100.0
-        #self.num_sqrt_meter_per_ped = self.config.get(
-        #    'num_sqrt_meter_per_ped', 16)
-        #self.num_pedestrians = 1 #min(self.max_num_pedestrians,
-                                #int(num_sqrt_meter / self.num_sqrt_meter_per_ped))
+
         print("Number of pedestrians: ", self.num_pedestrians)
+        self.use_ped_vel = self.config.get('use_ped_vel', False)
         """
         Parameters for our mechanism of preventing pedestrians to back up.
         Instead, stop them and then re-sample their goals.
@@ -620,21 +616,53 @@ class SocialNavRandomTask(PointNavRandomTask):
         zipped_lists = zip(self.pedestrian_order, ped_positions)
         sorted_zipped_lists = sorted(zipped_lists)
         ped_positions = [np.clip(pos, None, 10) for _, pos in sorted_zipped_lists]
+        ped_obs = np.hstack(ped_positions)
+        if self.use_ped_vel: # add pedestrian velocities to the observation
+            ped_velocities = [rotate_vector_3d(self.orca_sim.getAgentVelocity(orca_ped)+(0,), *env.robots[0].get_rpy())
+                              for orca_ped in self.orca_pedestrians]
+            ped_velocities = [cartesian_to_polar(ped_vel[0], ped_vel[1]) for ped_vel in ped_velocities]
+            for i in range(self.num_pedestrians, self.max_num_pedestrians):
+                ped_velocities.append(ped_velocities[i - self.num_pedestrians])
+            ped_obs = np.around(np.hstack((ped_obs, np.hstack(ped_velocities))), 6)
 
-        return np.hstack(ped_positions)
+        return ped_obs
 
-    def update_global_plan(self, env):
+    def sort_list(self, list):
+        zipped_lists = zip(self.pedestrian_order, list)
+        sorted_zipped_lists = sorted(zipped_lists)
+        sorted_zipped_lists = [np.clip(pos, None, 10) for _, pos in sorted_zipped_lists]
+        sorted_zipped_lists = np.hstack(ped_positions)
+        return sorted_zipped_lists
+
+    def get_pedestrians_obs_vel(self, env):
+        ped_positions = [self.global_to_local(env, ped.get_position())[:2] for ped in self.pedestrians]
+        ped_positions = [cartesian_to_polar(ped_pos[0], ped_pos[1]) for ped_pos in ped_positions]
+        ped_velocities = [rotate_vector_3d(self.orca_sim.getAgentVelocity(orca_ped) + (0,), *env.robots[0].get_rpy())
+                          for orca_ped in self.orca_pedestrians]
+        ped_velocities = [cartesian_to_polar(ped_vel[0], ped_vel[1]) for ped_vel in ped_velocities]
+
+        for i in range(self.num_pedestrians, self.max_num_pedestrians):
+            ped_positions.append(ped_positions[i-self.num_pedestrians])
+            ped_velocities.append(ped_velocities[i - self.num_pedestrians])
+        # sort by pedestrian order
+        ped_positions = self.sort_list(ped_positions)
+        ped_velocities = self.sort_list(ped_velocities)
+        ped_obs = np.around(np.hstack((ped_obs, ped_velocities)), 6)
+
+        return ped_obs
+
+    def update_global_plan(self, env): # not used
         self.waypoints, _ = self.get_shortest_path(env, entire_path=False)
         self.waypoints = self.waypoints[1:]
 
-    def update_waypoints(self, env):
+    def update_waypoints(self, env): # step_waypoints (transform the waypoints from global to local)
         wps = []
         for waypoint in self.waypoints:
             wp = self.global_to_local(env, np.append(waypoint, 1))[:2]
             wps.append(cartesian_to_polar(wp[0], wp[1]))
         return np.asarray(wps)
 
-    def test_update(self, wp): #test
+    def test_update(self, wp): # update_waypoints (take the next n waypoints from the global plan)
         self.full_path = self.full_path[wp:]
         if self.full_path.any():
             num_nodes = min(self.num_waypoints, self.full_path.shape[0])

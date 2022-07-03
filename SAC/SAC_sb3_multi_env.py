@@ -26,6 +26,7 @@ def make_env(rank, envs, num_peds):
         config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
         config_data['scene_id'] = envs[rank]
         config_data['num_pedestrians'] = num_peds[rank]
+        config_data['use_ped_vel'] = True
         config_data['use_orca'] = False
         action_timestep = 1/10.
         env = iGibsonEnv(config_file=config_data, mode="headless", action_timestep=action_timestep)
@@ -104,16 +105,16 @@ callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
 #envs = ["straight", "cross", "bend"]
 envs = ["H", "cross_narrow", "straight_narrow"]
-num_peds = [1, 2, 1]
+num_peds = [1, 1, 1]
 env_select = 1
 num_envs = 3  # Number of processes to use
 # Create the vectorized environment
 env = SubprocVecEnv([make_env(env_select, envs, num_peds) for i in range(num_envs)], start_method='fork')
 #env = VecFrameStack(env, n_stack=4, channels_order="last")
 env = VecMonitor(env, log_dir)
-timesteps = 3_000_000
-name = "X_256net_120scan_1ped2nodes_4wp_pot_001ent_sde_15m"
-new_training = False
+timesteps = 2_000_000
+name = "X_256net_120scan_1ped3nodes_vel_4wp_pot_001ent_sde_2m"
+new_training = True
 
 if new_training:
     start_training(env, name, timesteps)

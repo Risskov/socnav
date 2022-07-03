@@ -17,8 +17,9 @@ def plot_lidar(scan):
 config_filename = "configs/custom_env.yaml"
 config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
 
-config_data['scene_id'] = "cross_narrow"
-config_data['num_pedestrians'] = 2
+config_data['use_ped_vel'] = True
+config_data['scene_id'] = "straight_narrow"
+config_data['num_pedestrians'] = 1
 
 env = iGibsonEnv(config_file=config_data, mode="gui")
 p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
