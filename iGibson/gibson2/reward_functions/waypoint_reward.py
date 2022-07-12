@@ -29,7 +29,7 @@ class WaypointReward(BaseRewardFunction):
         for i, waypoint in enumerate(task.waypoints):
                 if l2_distance(robot_pos, waypoint) < self.dist_tol:
                     waypoint_reached = True
-                    task.test_update(i+1) #test
+                    task.update_waypoints(i+1) #test
                     break
         reward = self.waypoint_reward if waypoint_reached else 0.0
         return reward

@@ -1,5 +1,6 @@
 from gibson2.tasks.point_nav_fixed_task import PointNavFixedTask
 from gibson2.utils.utils import l2_distance
+from gibson2.utils.start_stop_areas import sample_new_pos
 import pybullet as p
 import logging
 import numpy as np
@@ -23,11 +24,13 @@ class PointNavRandomTask(PointNavFixedTask):
         :param env: environment instance
         :return: initial pose and target position
         """
-        _, initial_pos = env.scene.get_random_point(floor=self.floor_num)
+        #_, initial_pos = env.scene.get_random_point(floor=self.floor_num)
+        initial_pos = sample_new_pos(env)
         max_trials = 100
         dist = 0.0
         for _ in range(max_trials):
-            _, target_pos = env.scene.get_random_point(floor=self.floor_num)
+            #_, target_pos = env.scene.get_random_point(floor=self.floor_num)
+            target_pos = sample_new_pos(env)
             if env.scene.build_graph:
                 _, dist = env.scene.get_shortest_path(
                     self.floor_num,
@@ -40,8 +43,7 @@ class PointNavRandomTask(PointNavFixedTask):
         if not (self.target_dist_min < dist < self.target_dist_max):
             print("WARNING: Failed to sample initial and target positions")
         initial_orn = np.array([0, 0, np.random.uniform(0, np.pi * 2)])
-        #initial_pos = [-3, 3, 0] #test
-        #target_pos = [-3, -3, 0]  # test
+
         return initial_pos, initial_orn, target_pos
 
     def reset_scene(self, env):
@@ -86,5 +88,6 @@ class PointNavRandomTask(PointNavFixedTask):
         self.target_pos = target_pos
         self.initial_pos = initial_pos
         self.initial_orn = initial_orn
-
+        # self.initial_pos = np.array([-4, 0, 0])
+        #self.initial_orn = np.array([0,0,np.pi /3.9 ])
         super(PointNavRandomTask, self).reset_agent(env)

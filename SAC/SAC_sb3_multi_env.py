@@ -2,7 +2,8 @@ import gym
 import yaml
 import os
 from gibson2.envs.igibson_env import iGibsonEnv
-from feature_extractor import CustomCombinedExtractor
+from feature_extractor_sym import CustomCombinedExtractor
+#from feature_extractor import CustomCombinedExtractor
 from stable_baselines3 import SAC, DDPG
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv, VecFrameStack
 from stable_baselines3.common.monitor import Monitor
@@ -51,11 +52,11 @@ def start_training(env, name, timesteps):
     # Create SAC model
     learning_rate = 3e-4
     buffer_size = 1_000_000
-    batch_size = 256
+    batch_size = 256  # 256
     tau = 0.005
     gamma = 0.99  # 0.99
 
-    ent_coef = 0.01
+    ent_coef = 0.005
     target_ent = -2.  # te
     learning_starts = 50000
     use_sde = True
@@ -90,13 +91,20 @@ def start_training(env, name, timesteps):
     model.save(name)
     model.save_replay_buffer(f"./buffers/{name}")
 
-def continue_training(env, name, timesteps, use_replay_buffer=True):
-    model = SAC.load(f"./models/{name}", env=env)  # load the final model
+def continue_training(env, name, suffix, timesteps, best=False, use_replay_buffer=True):
+    if best:
+        model = SAC.load(f"./tmp/best_model/{name}_continued", env=env)  # load the final model
+    else:
+        model = SAC.load(f"./models/{name}", env=env)  # load the final model
     if use_replay_buffer:
         model.load_replay_buffer(f"./buffers/{name}")
-    model.learn(total_timesteps=timesteps, log_interval=4, tb_log_name=name, callback=callback, reset_num_timesteps=False)
-    model.save(f"{name}_continued")
-    model.save_replay_buffer(f"./buffers/{name}_continued")
+    model.learn(total_timesteps=timesteps,
+                log_interval=4,
+                tb_log_name=f"{name}_{suffix}",
+                callback=callback,
+                reset_num_timesteps=False)
+    model.save(f"{name}_{suffix}")
+    model.save_replay_buffer(f"./buffers/{name}_{suffix}")
 
 # Set up callback
 log_dir = "tmp/"
@@ -105,18 +113,22 @@ callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
 #envs = ["straight", "cross", "bend"]
 envs = ["H", "cross_narrow", "straight_narrow"]
-num_peds = [1, 1, 1]
+num_peds = [2, 2, 2]
 env_select = 1
 num_envs = 3  # Number of processes to use
 # Create the vectorized environment
 env = SubprocVecEnv([make_env(env_select, envs, num_peds) for i in range(num_envs)], start_method='fork')
 #env = VecFrameStack(env, n_stack=4, channels_order="last")
 env = VecMonitor(env, log_dir)
-timesteps = 2_000_000
-name = "X_256net_120scan_1ped3nodes_vel_4wp_pot_001ent_sde_2m"
+timesteps = 3_000_000
+name = "X_256net_2peds4nodes_0005ent_maxpooling" #"X_256net_120scan_1ped2nodes_vel_4wp_pot_001ent_sde_2m"
+suffix = "2peds"
 new_training = True
 
 if new_training:
     start_training(env, name, timesteps)
 else:
-    continue_training(env, name, timesteps, use_replay_buffer=True)
+    continue_training(env, name, suffix, timesteps, best=False, use_replay_buffer=True)
+
+
+# CURRENT TRAINING IS ACTUALLY MAXPOOLING

@@ -23,7 +23,7 @@ object_randomization_freq: null
 # robot
 robot: Custombot #Locobot
 is_discrete: false
-linear_velocity_high: 0.5
+linear_velocity_high: 0.4
 linear_velocity_low: -0.1 #-0.5
 angular_velocity: 1.5707963267948966
 
@@ -35,10 +35,10 @@ goal_format: polar
 num_waypoints: 4
 waypoint_resolution: 1. #0.1
 potential_resolution: 0.1
-max_num_pedestrians: 3 #5
+max_num_pedestrians: 4
 use_orca: false
-orca_radius: 0.5
-orca_max_speed: 0.1
+orca_radius: 0.3
+orca_max_speed: 0.1 #0.17
 pedestrian_collision_threshold: 0.3
 
 # reward

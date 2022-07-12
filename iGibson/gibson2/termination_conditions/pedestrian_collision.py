@@ -30,5 +30,6 @@ class PedestrianCollision(BaseTerminationCondition):
             ped_pos = ped.get_position()[:2]
             if l2_distance(robot_pos, ped_pos) < self.pedestrian_collision_threshold:
                 done = True
+                print("Pedestrian collision!")
                 break
         return done, success

@@ -5,6 +5,7 @@ import pybullet as p
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
+import csv
 
 def plot_lidar(scan):
     #step = 2*np.pi/360
@@ -14,40 +15,60 @@ def plot_lidar(scan):
     ax.scatter(angles, scan)
     plt.show()
 
+def write_to_file(arr, name):
+    np.savetxt(f'./data/{name}.csv', arr, delimiter=',')
+    #with open(f"./data/{name}", "w") as csvfile:
+    #    csvwriter = csv.writer(csvfile)
+
 config_filename = "configs/custom_env.yaml"
 config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
 
 config_data['use_ped_vel'] = True
-config_data['scene_id'] = "straight_narrow"
+config_data['use_orca'] = False
+config_data['scene_id'] = "cross_narrow"
 config_data['num_pedestrians'] = 1
+#config_data['record'] = True
 
 env = iGibsonEnv(config_file=config_data, mode="gui")
 p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
 p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=0, cameraPitch=-80, cameraTargetPosition=[0,0,5])
 
-#model = SAC.load("./models/larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m", env=env)
-model = SAC.load("./tmp/best_model.zip", env=env)
-#model = SAC.load("./tmp/best_model/512net_120scan_123ped_orca_4wp_pot_2te_sde_10m.zip", env=env)
+model = SAC.load("./models/test_256net_0005ent_meanpooling", env=env)
+# larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m
+# X_256net_120scan_1ped_vel_4wp_pot_001ent_sde_2m
+
+#model = SAC.load("./tmp/best_model.zip", env=env)
+#model = SAC.load("./tmp/best_model/X_256net_120scan_1ped3nodes_vel_4wp_pot_001ent_sde_2m.zip", env=env)
 #print(model.get_parameters())
 #check_env(env)
 # best: sc_narrow_H_no_pot_long_low_reverse_no_peds_rb_no_conv_flatten
 
-episodes = 50
+episodes = 20
+collisions = 0
+timeouts = 0
 i = 0
+rob_pos = []
+ped_pos = []
 for _ in range(episodes):
     obs = env.reset()
     #print(obs)
     rewards = 0
     # while True:
-    for _ in range(500):
+    # for ped in env.task.pedestrians:
+    #     ped_pos.append(ped.get_position()[:2])
+    #     rob_pos.append(env.robots[0].get_position()[:2])
+    for j in range(500):
         action, _states = model.predict(obs, deterministic=True)    #deterministic=True
-        #action = [-0.666, 0]
+        #action = [-0.62, 0]
+        #action = [1, 0]
         obs, reward, done, info = env.step(action)
         rewards += reward
-        #print(obs["pedestrians"])
+        # for ped in env.task.pedestrians:
+        #     ped_pos.append(ped.get_position()[:2])
+        #     rob_pos.append(env.robots[0].get_position()[:2])
 
         if i % 50 == 0:
-            #print(obs)
+            #print(obs["pedestrians"])
             #print(obs["scan"].view(-1, 1, 360))
             #plot_lidar(obs["scan"])
             pass
@@ -55,5 +76,14 @@ for _ in range(episodes):
         if done:
             #print(info)
             if info["success"] == False:
+                collisions += 1
                 print("COLLISION!")
             break
+        if j == 499:
+            timeouts += 1
+            print("TIMEOUT!")
+print("Number of collisions: ", collisions)
+print("Number of timeouts: ", timeouts)
+#write_to_file(ped_pos, "ped_positions")
+#write_to_file(rob_pos, "rob_positions")
+

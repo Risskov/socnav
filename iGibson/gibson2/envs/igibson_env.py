@@ -139,7 +139,8 @@ class iGibsonEnv(BaseEnv):
         if 'pedestrians' in self.output:
             multi = 4 if self.config['use_ped_vel'] else 2
             observation_space['pedestrians'] = self.build_obs_space(
-                shape=(self.task.max_num_pedestrians*multi,), low=-np.inf, high=-np.inf)
+                #shape=(self.task.max_num_pedestrians*multi,), low=-np.inf, high=-np.inf)
+                shape = (self.task.max_num_pedestrians, multi), low = -np.inf, high = -np.inf)
         if 'rgb' in self.output:
             observation_space['rgb'] = self.build_obs_space(
                 shape=(self.image_height, self.image_width, 3),
