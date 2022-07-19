@@ -24,6 +24,8 @@ def plot_paths():
     plt.show()
 
 
+
+
 """
 fig,axes=plt.subplots(1,1)
 axes.scatter(x,y)

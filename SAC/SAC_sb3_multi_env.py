@@ -48,7 +48,7 @@ def make_env(rank, envs, num_peds):
 # env = VecMonitor(env, log_dir)
 #env = Monitor(env, log_dir)
 
-def start_training(env, name, timesteps):
+def start_training(env, name, timesteps, ent=0.005):
     # Create SAC model
     learning_rate = 3e-4
     buffer_size = 1_000_000
@@ -56,13 +56,16 @@ def start_training(env, name, timesteps):
     tau = 0.005
     gamma = 0.99  # 0.99
 
-    ent_coef = 0.005
+    ent_coef = ent
     target_ent = -2.  # te
     learning_starts = 50000
     use_sde = True
     use_sde_at_warmup = True
     layer_dim = 256  # 1024 512 256
     net_arch = [layer_dim, layer_dim, layer_dim]
+    # Set up callback
+    os.makedirs(log_dir, exist_ok=True)
+    callback = SaveOnBestTrainingRewardCallback(name, check_freq=1000, log_dir=log_dir)
 
     policy_kwargs = dict(features_extractor_class=CustomCombinedExtractor,
                          net_arch=net_arch,
@@ -92,6 +95,9 @@ def start_training(env, name, timesteps):
     model.save_replay_buffer(f"./buffers/{name}")
 
 def continue_training(env, name, suffix, timesteps, best=False, use_replay_buffer=True):
+    # Set up callback
+    os.makedirs(log_dir, exist_ok=True)
+    callback = SaveOnBestTrainingRewardCallback(name, check_freq=1000, log_dir=log_dir)
     if best:
         model = SAC.load(f"./tmp/best_model/{name}_continued", env=env)  # load the final model
     else:
@@ -106,29 +112,24 @@ def continue_training(env, name, suffix, timesteps, best=False, use_replay_buffe
     model.save(f"{name}_{suffix}")
     model.save_replay_buffer(f"./buffers/{name}_{suffix}")
 
-# Set up callback
-log_dir = "tmp/"
-os.makedirs(log_dir, exist_ok=True)
-callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
+log_dir = "tmp/"
 #envs = ["straight", "cross", "bend"]
 envs = ["H", "cross_narrow", "straight_narrow"]
 num_peds = [2, 2, 2]
-env_select = 1
+env_select = 2
 num_envs = 3  # Number of processes to use
 # Create the vectorized environment
 env = SubprocVecEnv([make_env(env_select, envs, num_peds) for i in range(num_envs)], start_method='fork')
 #env = VecFrameStack(env, n_stack=4, channels_order="last")
 env = VecMonitor(env, log_dir)
-timesteps = 3_000_000
-name = "X_256net_2peds4nodes_0005ent_maxpooling" #"X_256net_120scan_1ped2nodes_vel_4wp_pot_001ent_sde_2m"
+timesteps = 1_500_000
+name = "testing_cone" #"X_256net_2peds4nodes_0005ent_maxpooling"
 suffix = "2peds"
 new_training = True
 
 if new_training:
-    start_training(env, name, timesteps)
+    start_training(env, name, timesteps, ent=0.005)
 else:
     continue_training(env, name, suffix, timesteps, best=False, use_replay_buffer=True)
 
-
-# CURRENT TRAINING IS ACTUALLY MAXPOOLING

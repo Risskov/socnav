@@ -88,6 +88,6 @@ class PointNavRandomTask(PointNavFixedTask):
         self.target_pos = target_pos
         self.initial_pos = initial_pos
         self.initial_orn = initial_orn
-        # self.initial_pos = np.array([-4, 0, 0])
-        #self.initial_orn = np.array([0,0,np.pi /3.9 ])
+        #self.initial_pos = np.array([-4, -4, 0])
+        #self.initial_orn = np.array([0,0,np.pi*3/4 ])
         super(PointNavRandomTask, self).reset_agent(env)
