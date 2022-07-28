@@ -61,8 +61,8 @@ class WallLargeScene(WallScene):
         """
         Load surrounding walls
         """
-        wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 0.2, 1]))
-        wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([0.2, 10, 1]))
+        wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 0.2, 2]))
+        wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([0.2, 10, 2]))
         wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
                                   basePosition=[0, 10.2, 0])
         wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
@@ -77,13 +77,24 @@ class WallLargeScene(WallScene):
         """
         Load the walls
         """
-        if self.scene_id == "straight":
-            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 0.2, 1]))
+        if self.scene_id == "I_large":
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 4.25, 2]))
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
-                                      basePosition=[0, 2.2, 0])
+                                      basePosition=[0, 5.75, 0])
             wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
-                                      basePosition=[0, -2.2, 0])
+                                      basePosition=[0, -5.75, 0])
             self.walls_id += [wall1, wall2]
+        elif self.scene_id == "X_large":
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([4.25, 4.25, 2]))
+            wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[5.75, 5.75, 0])
+            wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[-5.75, 5.75, 0])
+            wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[-5.75, -5.75, 0])
+            wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[5.75, -5.75, 0])
+            self.walls_id += [wall1, wall2, wall3, wall4]
         elif self.scene_id == "straight_narrow_large":
             wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 4.5, 1]))
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,

@@ -55,6 +55,7 @@ class WallScene(IndoorScene):
         )
         self.walls_id = []
         self.objects_by_name = {}
+        self.color = np.array([33/255, 66/255, 111/255, 1])
         logging.info("WallScene scene: {}".format(scene_id))
 
     def load_floor_metadata(self):
@@ -110,15 +111,23 @@ class WallScene(IndoorScene):
         """
         Load surrounding walls
         """
-        wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 0.2, 1]))
-        wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([0.2, 5, 1]))
+        wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5.4, 0.2, 2]))
+        wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([0.2, 5, 2]))
+        vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([5.4, 0.2, 2]),
+                                   rgbaColor=self.color)
+        vis2 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([0.2, 5, 2]),
+                                   rgbaColor=self.color)
         wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                  baseVisualShapeIndex=vis1,
                                   basePosition=[0, 5.2, 0])
         wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                  baseVisualShapeIndex=vis1,
                                   basePosition=[0, -5.2, 0])
         wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                  baseVisualShapeIndex=vis2,
                                   basePosition=[5.2, 0, 0])
         wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                  baseVisualShapeIndex=vis2,
                                   basePosition=[-5.2, 0, 0])
         self.walls_id = [wall1, wall2, wall3, wall4]
 
@@ -127,25 +136,39 @@ class WallScene(IndoorScene):
         Load the walls
         """
         if self.scene_id == "straight":
-            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 0.2, 1]))
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 0.2, 2]))
+            vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([5, 0.2, 2]),
+                                       rgbaColor=self.color)
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[0, 2.2, 0])
             wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[0, -2.2, 0])
             self.walls_id += [wall1, wall2]
         elif self.scene_id == "straight_narrow":
-            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 2, 1]))
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([5, 2, 2]))
+            vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([5, 2, 2]),
+                                       rgbaColor=self.color)
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[0, 3, 0])
             wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[0, -3, 0])
             self.walls_id += [wall1, wall2]
         elif self.scene_id == "H":
-            wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.5, 1, 1]))
-            wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([2.5, 1, 1]))
+            wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.5, 1, 2]))
+            wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([2.5, 1, 2]))
+            vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([1.5, 1, 2]),
+                                       rgbaColor=self.color)
+            vis2 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([2.5, 1, 2]),
+                                       rgbaColor=self.color)
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[-3.5, 0, 0])
             wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                      baseVisualShapeIndex=vis2,
                                       basePosition=[2.5, 0, 0])
             self.walls_id += [wall1, wall2]
         elif self.scene_id == "S":
@@ -166,14 +189,20 @@ class WallScene(IndoorScene):
                                       basePosition=[-2, 0, 0])
             self.walls_id += [wall1]
         elif self.scene_id == "cross_narrow":
-            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([2, 2, 1]))
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([2, 2, 2]))
+            vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([2, 2, 2]),
+                                       rgbaColor=self.color)
             wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[3, 3, 0])
             wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[-3, 3, 0])
             wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[-3, -3, 0])
             wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      baseVisualShapeIndex=vis1,
                                       basePosition=[3, -3, 0])
             self.walls_id += [wall1, wall2, wall3, wall4]
         elif self.scene_id == "cross":

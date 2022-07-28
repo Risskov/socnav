@@ -61,6 +61,7 @@ def plot_multienv():
     labels = ["Env-I", "Env-X", "Env-H", "Env-IXH"]
     dir = "./sac_tensorboard/"
     get_plot("../../Master's/SAC/sac_tensorboard/", "straight_larger_net_120scan_1ped_4wp_ent003_1m", labels[0])
+    # can use H_larger_net_120scan_1ped_4wp_pot_003ent_ero10_3m instead for straight
     get_plot(dir, "cross_larger_net_120scan_1ped_4wp_pot_003ent_ero6_2m", labels[1])
     get_plot(dir, "H_larger_net_120scan_1ped_4wp_pot_003ent_ero6_1m", labels[2])
     get_plot(dir, "larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m", labels[3])

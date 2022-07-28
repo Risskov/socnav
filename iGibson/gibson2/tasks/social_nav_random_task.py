@@ -62,11 +62,13 @@ class SocialNavRandomTask(PointNavRandomTask):
                                then the pedestrian is considered backing off.
         """
         self.num_steps_stop = [0] * self.num_pedestrians
+        self.num_steps_stop_2 = [0] * self.num_pedestrians
         self.neighbor_stop_radius = self.config.get(
             'neighbor_stop_radius', 1.0)
         # By default, stop 2 seconds if stuck
         self.num_steps_stop_thresh = self.config.get(
-            'num_steps_stop_thresh', 20)
+            'num_steps_stop_thresh', 40)
+        self.num_steps_stop_thresh_2 = 40
         # backoff when angle is greater than 135 degrees
         self.backoff_radian_thresh = self.config.get(
             'backoff_radian_thresh', np.deg2rad(135.0))
@@ -319,7 +321,7 @@ class SocialNavRandomTask(PointNavRandomTask):
                 target_pos[:2],
                 entire_path=True)
             dist = np.linalg.norm(target_pos[:2] - self.target_pos[:2])
-            if len(shortest_path) > 1 and dist > self.orca_radius*2:
+            if len(shortest_path) > 1 and dist > self.orca_radius*3:
                 break
         waypoints = self.shortest_path_to_waypoints(shortest_path)
         return waypoints
@@ -387,7 +389,17 @@ class SocialNavRandomTask(PointNavRandomTask):
                 continue
                 #next_goal = current_pos
                 #return
-            elif self.pedestrian_cone(ped): #testing
+            elif self.num_steps_stop[i] >= self.num_steps_stop_thresh:
+                self.num_steps_stop[i] = 0
+                waypoints = self.sample_new_target_pos(env, current_pos)
+                self.pedestrian_waypoints[i] = waypoints
+
+            elif self.pedestrian_cone(ped, i): #testing
+                if self.num_steps_stop_2[i] >= self.num_steps_stop_thresh_2:
+                    self.num_steps_stop_2[i] = 0
+                    waypoints = self.sample_new_target_pos(env, current_pos)
+                    self.pedestrian_waypoints[i] = waypoints
+                    break
                 self.orca_sim.setAgentPrefVelocity(orca_ped, (0, 0))
                 continue
 
@@ -461,10 +473,10 @@ class SocialNavRandomTask(PointNavRandomTask):
             next_pos_xyz = np.array([pos_xy[0], pos_xy[1], prev_pos_xyz[2]])
 
             if self.detect_backoff(ped, orca_ped):
-                pass
-                # self.stop_neighbor_pedestrians(i,
-                #                                next_peds_stop_flag,
-                #                                next_peds_pos_xyz)
+                #pass
+                self.stop_neighbor_pedestrians(i,
+                                               next_peds_stop_flag,
+                                               next_peds_pos_xyz)
             elif next_peds_stop_flag[i] is False:
                 # If there are no other neighboring pedestrians that forces
                 # this pedestrian to stop, then simply update next position.
@@ -600,10 +612,10 @@ class SocialNavRandomTask(PointNavRandomTask):
         ped_velocities = [cartesian_to_polar(ped_vel[0], ped_vel[1]) for ped_vel in ped_velocities]
         if self.num_pedestrians < self.max_num_pedestrians: #fill out empty nodes and sort by order
             for i in range(self.num_pedestrians, self.max_num_pedestrians):
-                ped_positions.append(ped_positions[i-self.num_pedestrians])
-                ped_velocities.append(ped_velocities[i - self.num_pedestrians])
-                #ped_positions.append([10, -3])
-                #ped_velocities.append([0, 0])
+                # ped_positions.append(ped_positions[i-self.num_pedestrians])
+                # ped_velocities.append(ped_velocities[i - self.num_pedestrians])
+                ped_positions.append([0, 0])
+                ped_velocities.append([0, 0])
             # sort by pedestrian order
             ped_positions = self.sort_list(ped_positions)
             ped_velocities = self.sort_list(ped_velocities)
@@ -621,7 +633,7 @@ class SocialNavRandomTask(PointNavRandomTask):
         ped_velocities = [cartesian_to_polar(ped_vel[0], ped_vel[1]) for ped_vel in ped_velocities]
         if self.num_pedestrians < self.max_num_pedestrians: #fill out empty nodes and sort by order
             for i in range(self.num_pedestrians, self.max_num_pedestrians):
-                ped_positions.append([10, -3])
+                ped_positions.append([0, 0])
                 ped_velocities.append([0, 0])
             # sort by pedestrian order
             ped_positions = self.sort_list(ped_positions)
@@ -680,7 +692,7 @@ class SocialNavRandomTask(PointNavRandomTask):
     def social_cone(self):
         pass
 
-    def pedestrian_cone(self, ped):
+    def pedestrian_cone(self, ped, i):
         relative_robot_pos = self.robot_pos - ped.get_position()[:2]
         d = l2_distance(self.robot_pos, ped.get_position()[:2])
         theta = np.arctan2(relative_robot_pos[1], relative_robot_pos[0])
@@ -691,8 +703,8 @@ class SocialNavRandomTask(PointNavRandomTask):
         if a < -np.pi:
             a += np.pi*2
 
-        if d < 1 and abs(a) < np.pi/4 :
-            print("Stopping")
+        if d < 1 and abs(a) < np.pi/6 :
+            self.num_steps_stop_2[i] += 1
             return True
         else:
             return False

@@ -124,37 +124,37 @@ class LargeMaxpoolExtractor(BaseFeaturesExtractor):
         super(LargeMaxpoolExtractor, self).__init__(observation_space, features_dim=1)
 
         extractors = {}
-
+        dim = 256
         total_concat_size = 0
         # We need to know size of the output of this extractor,
         # so go over all the spaces and compute output feature sizes
         for key, subspace in observation_space.spaces.items():
             if key == "scan":
                 self.scan_dim = subspace.shape[0]
-                extractors[key] = nn.Sequential(nn.Linear(self.scan_dim, 256), nn.ReLU(),
-                                                #nn.Linear(256, 256), nn.ReLU(),
-                                                #nn.Linear(256, 256), nn.ReLU()
+                extractors[key] = nn.Sequential(nn.Linear(self.scan_dim, dim), nn.ReLU(),
+                                                #nn.Linear(dim, dim), nn.ReLU(),
+                                                #nn.Linear(dim, dim), nn.ReLU()
                                                 )
-                total_concat_size += 256
+                total_concat_size += dim
                 print("Scan dim: ", self.scan_dim)
             elif key == "goal":
                 # Run through a simple MLP
-                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], 256), nn.ReLU())
-                total_concat_size += 256
+                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], dim), nn.ReLU())
+                total_concat_size += dim
             elif key == "waypoints":
-                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], 256), nn.ReLU())
-                total_concat_size += 256
+                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], dim), nn.ReLU())
+                total_concat_size += dim
                 print("Waypoint layer size: ", subspace.shape[0])
             elif key == "pedestrians":
                 extractors[key] = nn.Sequential(nn.Linear(4, 64), nn.ReLU(),
                                                 nn.Linear(64, 128), nn.ReLU(),
-                                                nn.Linear(128, 256), nn.ReLU(),
+                                                nn.Linear(128, dim), nn.ReLU(),
                                                 )
-                total_concat_size += 256
+                total_concat_size += dim
                 print("Ped layer size: ", subspace.shape[0])
             elif key == "task_obs":
-                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], 256), nn.ReLU())
-                total_concat_size += 256
+                extractors[key] = nn.Sequential(nn.Linear(subspace.shape[0], dim), nn.ReLU())
+                total_concat_size += dim
             print("Added layer: ", key)
 
         self.extractors = nn.ModuleDict(extractors)

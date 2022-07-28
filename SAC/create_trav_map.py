@@ -3,6 +3,18 @@ from PIL import Image
 
 dim = 2000
 
+def I_large(img):
+    for i in range(dim):
+        for j in range(dim):
+            if 850 <= i < 1150:
+                img[i][j] = 255
+
+def X_large(img):
+    for i in range(dim):
+        for j in range(dim):
+            if 850 <= i < 1150 or 850 <= j < 1150:
+                img[i][j] = 255
+
 
 def straight_horizontal(img):
     for i in range(dim):
@@ -77,9 +89,9 @@ def E(img):
                 img[i][j] = 0
 
 
-# img = np.zeros((dim, dim), np.uint8)
-img = np.ones((dim, dim), np.uint8) * 255
-E(img)
+img = np.zeros((dim, dim), np.uint8)
+#img = np.ones((dim, dim), np.uint8) * 255
+X_large(img)
 im = Image.fromarray(img)
 im.save("floor_no_obj_0.png")
 im.save("floor_trav_no_obj_0.png")
