@@ -67,7 +67,7 @@ def start_training(env, name, timesteps, ent, feat, layer_dim=(3, 256)):
                 #target_entropy=target_ent,
                 use_sde=use_sde,
                 use_sde_at_warmup=use_sde_at_warmup,
-                learning_starts=learning_starts,
+                #learning_starts=learning_starts,
                 )
     model.learn(total_timesteps=timesteps, log_interval=4, tb_log_name=name, callback=callback)
     model.save(name)
@@ -78,20 +78,22 @@ log_dir = "tmp/"
 #envs = ["straight", "cross", "bend"]
 #envs = ["H", "cross_narrow", "straight_narrow"]
 envs = ["H", "X_large", "I_large"]
-num_peds = [4, 3, 3]
+#envs = ["H", "X_large", "H", "X_large"]
+#envs = ["X_large", "X_large", "X_large", "X_large"]
+num_peds = [4, 3, 4, 4]
 env_select = 1
 num_envs = 3  # Number of processes to use
 # Create the vectorized environment
 env = SubprocVecEnv([make_env(i, envs, num_peds) for i in range(num_envs)], start_method='fork')
 #env = VecFrameStack(env, n_stack=4, channels_order="last")
 env = VecMonitor(env, log_dir)
-timesteps = 2_000_000
+timesteps = 1_500_000
 #name = "X_512net_2peds4nodes_auto_maxpooling"
 
-start_training(env, "3L_256net_433peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling", timesteps,
-                ent=0.01, feat=LargeMaxpoolExtractor)
+# start_training(env, "XL_256net_434peds8nodes_orca_00fix_001ent_6wp_ero_maxpooling", timesteps,
+#                 ent=0.01, feat=LargeMaxpoolExtractor)
 
-start_training(env, "3L_256net_433peds6nodes_orca_00fix_autoent_6wp_ero_maxpooling", timesteps,
+start_training(env, "XL_256net_434peds8nodes_orca_00fix_autoent_6wp_ero_maxpooling", timesteps,
                 ent='auto', feat=LargeMaxpoolExtractor)
 
 # start_training(env, "X_256net_2peds6nodes_orca_00fix_autoent_4wp_maxpooling", timesteps,

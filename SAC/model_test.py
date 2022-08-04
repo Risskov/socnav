@@ -26,16 +26,17 @@ def write_to_file(arr, name):
 config_filename = "configs/custom_env.yaml"
 config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
 
-config_data['scene'] = 'walls_large'
+#config_data['scene'] = 'walls_large'
 config_data['use_ped_vel'] = True
 config_data['use_orca'] = False
-config_data['scene_id'] = "X_large"
-config_data['num_pedestrians'] = 6
+config_data['scene_id'] = "H"
+config_data['num_pedestrians'] = 4
 #config_data['record'] = True
 
 env = iGibsonEnv(config_file=config_data, mode="gui")
 p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
 p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=0, cameraPitch=-80, cameraTargetPosition=[0,0,5])
+#H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling
 
 #model = SAC.load("./models/H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling", env=env)
 # larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m
@@ -55,9 +56,10 @@ episodes = 100
 collisions = 0
 timeouts = 0
 i = 0
-rob_pos = []
-ped_pos = []
+
 for _ in range(episodes):
+    rob_pos = []
+    ped_pos = []
     obs = env.reset()
     #print(obs)
     rewards = 0

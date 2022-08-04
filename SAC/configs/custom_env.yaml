@@ -9,7 +9,7 @@ pybullet_load_texture: false #true
 trav_map_type: no_obj #with_obj
 trav_map_resolution: 0.1
 trav_map_default_resolution: 0.1
-trav_map_erosion: 10 #6 #12 #10
+trav_map_erosion: 15 #6 #12 #10
 should_open_all_doors: false
 not_load_object_categories: [door, carpet]
 texture_scale: 0.5
@@ -35,7 +35,7 @@ goal_format: polar
 num_waypoints: 6 #4 #6
 waypoint_resolution: 0.6 #0.6 #1. #0.1
 potential_resolution: 0.1
-max_num_pedestrians: 6
+max_num_pedestrians: 5
 use_orca: false
 orca_radius: 0.3
 orca_max_speed: 0.2 #0.3

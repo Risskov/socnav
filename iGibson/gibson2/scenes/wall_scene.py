@@ -236,6 +236,24 @@ class WallScene(IndoorScene):
                                       basePosition=[-2.2, 3.5, 0])
             self.walls_id += [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8]
 
+        elif self.scene_id == "I_large":
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 4.25, 2]))
+            wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[0, 5.75, 0])
+            wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[0, -5.75, 0])
+            self.walls_id += [wall1, wall2]
+        elif self.scene_id == "X_large":
+            wall_coll = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([4.25, 4.25, 2]))
+            wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[5.75, 5.75, 0])
+            wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[-5.75, 5.75, 0])
+            wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[-5.75, -5.75, 0])
+            wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
+                                      basePosition=[5.75, -5.75, 0])
+
     def load_floor_plane(self):
         """
         Load floor plane
