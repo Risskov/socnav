@@ -9,7 +9,7 @@ pybullet_load_texture: false #true
 trav_map_type: no_obj #with_obj
 trav_map_resolution: 0.1
 trav_map_default_resolution: 0.1
-trav_map_erosion: 15 #6 #12 #10
+trav_map_erosion: 12 #15 #6 #12 #10
 should_open_all_doors: false
 not_load_object_categories: [door, carpet]
 texture_scale: 0.5
@@ -23,19 +23,19 @@ object_randomization_freq: null
 # robot
 robot: Custombot #Locobot
 is_discrete: false
-linear_velocity_high: 0.3
+linear_velocity_high: 0.5
 linear_velocity_low: -0.1 #-0.5
 angular_velocity: 1.5707963267948966
 
 # task
 task: social_nav_random
 target_dist_min: 1.0
-target_dist_max: 30.0
+target_dist_max: 50.0
 goal_format: polar
 num_waypoints: 6 #4 #6
-waypoint_resolution: 0.6 #0.6 #1. #0.1
+waypoint_resolution: 1.5 #0.6 #1. #0.1
 potential_resolution: 0.1
-max_num_pedestrians: 5
+max_num_pedestrians: 8
 use_orca: false
 orca_radius: 0.3
 orca_max_speed: 0.2 #0.3
@@ -46,7 +46,7 @@ reward_type: geodesic
 success_reward: 20.0
 potential_reward_weight: 5.0
 collision_reward_weight: -20.0
-timestep_reward_weight: -0.02
+timestep_reward_weight: -0.05
 personal_space_reward: -2
 waypoint_reward: 2. # 0.5
 

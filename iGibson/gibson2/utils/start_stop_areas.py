@@ -26,12 +26,13 @@ def get_envH():
             [3.25, -3, 0.75, 0.75]]
     return envH
 def get_envE():
-    envE = [[-6.75, 6.25, 1.75, 2.25],
-            [-8.25, 1.25, 0.75, 0.75],
-            [-8.25, -2.75, 0.75, 0.75],
-            [-8.25, -8.25, 0.75, 0.75],
-            [-0.75, -8.25, 0.75, 0.75],
-            [-1.75, -0.25, 1.25, 1.25],
+    envE = [
+            #[-6.75, 6.25, 1.75, 2.25],
+            #[-8.25, 1.25, 0.75, 0.75],
+            #[-8.25, -2.75, 0.75, 0.75],
+            #[-8.25, -8.25, 0.75, 0.75],
+            #[-0.75, -8.25, 0.75, 0.75],
+            #[-1.75, -0.25, 1.25, 1.25],
             [0.5, 4.5, 0.25, 0.25],
             [0.5, 9.25, 0.25, 0.25],
             [3.25, 4.5, 0.25, 0.25],
@@ -70,6 +71,10 @@ def sample_new_pos(env):
         areas = get_envI_large()
     elif scene_id == "X_large":
         areas = get_envX_large()
+    elif scene_id == "Env-I":
+        areas = get_envI()
+    elif scene_id == "Env-X":
+        areas = get_envX()
     rnd_ellipse = np.random.randint(len(areas))
     return random_point_ellipse(*areas[rnd_ellipse])
 

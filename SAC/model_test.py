@@ -6,6 +6,7 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import os
 import torch as th
 th.autograd.set_detect_anomaly(True)
 
@@ -26,50 +27,47 @@ def write_to_file(arr, name):
 config_filename = "configs/custom_env.yaml"
 config_data = yaml.load(open(config_filename, "r"), Loader=yaml.FullLoader)
 
-#config_data['scene'] = 'walls_large'
+# config_data['scene'] = 'walls_large'
 config_data['use_ped_vel'] = True
 config_data['use_orca'] = False
-config_data['scene_id'] = "H"
-config_data['num_pedestrians'] = 4
+config_data['scene_id'] = "straight"
+config_data['num_pedestrians'] = 2
 #config_data['record'] = True
 
 env = iGibsonEnv(config_file=config_data, mode="gui")
-p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=0, cameraPitch=-80, cameraTargetPosition=[0,0,5])
+p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)#, shadowMapWorldSize=16384)
+p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=0, cameraPitch=-80, cameraTargetPosition=[0,-1,5])
 #H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling
 
-#model = SAC.load("./models/H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling", env=env)
-# larger_net_120scan_1ped_4wp_pot_003ent_ero6_3m
-# X_256net_120scan_1ped_vel_4wp_pot_001ent_sde_2m
+model = SAC.load("./models/XL_256net_434peds8nodes_orca_00fix_001ent_6wp_ero_maxpooling", env=env)
+#model = SAC.load("./models/X_256net_2peds4nodes_autoent_maxpooling", env=env)
 
-#model = SAC.load("./tmp/3_256net_2peds2nodes_orca_autoent_maxpooling.zip", env=env)
-model = SAC.load("./tmp/best_model/H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling", env=env)
-#model = SAC.load("./tmp/best_model/3_256net_2peds4nodes_autoent_maxpooling", env=env)
-
-
+#model = SAC.load("./tmp/best_model/H_256net_4peds6nodes_orca_00fix_001ent_6wp_ero_maxpooling", env=env)
 
 #print(model.get_parameters())
 #check_env(env)
 
-
-episodes = 100
+episodes = 40
 collisions = 0
 timeouts = 0
 i = 0
 
-for _ in range(episodes):
+for ep in range(episodes):
     rob_pos = []
     ped_pos = []
     obs = env.reset()
     #print(obs)
+    # p.startStateLogging(
+    #     p.STATE_LOGGING_VIDEO_MP4,
+    #     os.path.expanduser('~') + f'/X3_{ep}.mp4')
     rewards = 0
     # while True:
     # for ped in env.task.pedestrians:
     #     ped_pos.append(ped.get_position()[:2])
     #     rob_pos.append(env.robots[0].get_position()[:2])
-    for j in range(800):
-        action, _states = model.predict(obs, deterministic=True)    #deterministic=True
-        #action = [-0.666, 0.]
+    for j in range(1800):
+        #action, _states = model.predict(obs, deterministic=True)    #deterministic=True
+        action = [-0.666, 0.]
         #action = [1, 0]
         obs, reward, done, info = env.step(action)
         rewards += reward

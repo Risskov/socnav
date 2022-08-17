@@ -1,7 +1,19 @@
 import numpy as np
 from PIL import Image
 
-dim = 2000
+dim = 1000
+
+def Env_I(img):
+    for i in range(dim):
+        for j in range(dim):
+            if 350 <= i < 650:
+                img[i][j] = 255
+
+def Env_X(img):
+    for i in range(dim):
+        for j in range(dim):
+            if 350 <= i < 650 or 350 <= j < 650:
+                img[i][j] = 255
 
 def I_large(img):
     for i in range(dim):
@@ -88,10 +100,19 @@ def E(img):
                     (1500 <= i < 1700 and 1650 <= j < 1750):
                 img[i][j] = 0
 
+def E2(img):
+    for i in range(dim):
+        for j in range(dim):
+            if (0 <= i < 800 and 650 <= j < 950) or (1300 <= i < 1700 and 450 <= j < 700) or \
+                    (0 <= i < 400 and 1150 <= j < 1200) or (0 <= i < 1100 and 1450 <= j < 1500) or \
+                    (700 <= i < 2000 and 1150 <= j < 1200) or (1300 <= i < 2000 and 1450 <= j < 1500) or \
+                    (1500 <= i < 1700 and 1650 <= j < 1750):
+                img[i][j] = 0
+
 
 img = np.zeros((dim, dim), np.uint8)
 #img = np.ones((dim, dim), np.uint8) * 255
-X_large(img)
+Env_X(img)
 im = Image.fromarray(img)
 im.save("floor_no_obj_0.png")
 im.save("floor_trav_no_obj_0.png")

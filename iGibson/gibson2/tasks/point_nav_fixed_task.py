@@ -32,9 +32,9 @@ class PointNavFixedTask(BaseTask):
             PointGoal(self.config),
         ]
         self.reward_functions = [
-            PotentialReward(self.config),
-            CollisionReward(self.config),
-            PointGoalReward(self.config),
+            #PotentialReward(self.config),
+            #CollisionReward(self.config),
+            #PointGoalReward(self.config),
         ]
 
         self.initial_pos = np.array(self.config.get('initial_pos', [0, 0, 0]))

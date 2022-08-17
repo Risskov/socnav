@@ -63,13 +63,21 @@ class WallLargeScene(WallScene):
         """
         wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([10, 0.2, 2]))
         wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([0.2, 10, 2]))
+        vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([10, 0.2, 2]),
+                                   rgbaColor=self.color)
+        vis2 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([0.2, 10, 2]),
+                                   rgbaColor=self.color)
         wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                  baseVisualShapeIndex=vis1,
                                   basePosition=[0, 10.2, 0])
         wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                  baseVisualShapeIndex=vis1,
                                   basePosition=[0, -10.2, 0])
         wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                  baseVisualShapeIndex=vis2,
                                   basePosition=[10.2, 0, 0])
         wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                  baseVisualShapeIndex=vis2,
                                   basePosition=[-10.2, 0, 0])
         self.walls_id = [wall1, wall2, wall3, wall4]
 
@@ -141,7 +149,7 @@ class WallLargeScene(WallScene):
             wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll,
                                       basePosition=[5.5, -5.5, 0])
             self.walls_id += [wall1, wall2, wall3, wall4]
-        elif self.scene_id == "E":
+        elif self.scene_id == "E_upside_down":
             wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.5, 4., 2]))
             wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.25, 2., 2]))
             wall_coll3 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.5, 1., 2]))
@@ -163,6 +171,54 @@ class WallLargeScene(WallScene):
                                       basePosition=[1.75, -3.5, 0])
             wall7 = p.createMultiBody(baseCollisionShapeIndex=wall_coll7,
                                       basePosition=[4.75, -6.5, 0])
+
+
+            self.walls_id += [wall1, wall2, wall3, wall4]
+
+        elif self.scene_id == "E":
+            wall_coll1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.5, 4., 2]))
+            wall_coll2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([1.25, 2., 2]))
+            wall_coll3 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.5, 1., 2]))
+            wall_coll4 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.25, 2., 2]))
+            wall_coll5 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.25, 5.5, 2]))
+            wall_coll6 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.25, 6.5, 2]))
+            wall_coll7 = p.createCollisionShape(p.GEOM_BOX, halfExtents=np.array([.25, 3.5, 2]))
+            vis1 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([1.5, 4., 2]),
+                                       rgbaColor=self.color)
+            vis2 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([1.25, 2., 2]),
+                                       rgbaColor=self.color)
+            vis3 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([.5, 1., 2]),
+                                       rgbaColor=self.color)
+            vis4 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([.25, 2., 2]),
+                                       rgbaColor=self.color)
+            vis5 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([.25, 5.5, 2]),
+                                       rgbaColor=self.color)
+            vis6 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([.25, 6.5, 2]),
+                                       rgbaColor=self.color)
+            vis7 = p.createVisualShape(p.GEOM_BOX, halfExtents=np.array([.25, 3.5, 2]),
+                                       rgbaColor=self.color)
+
+            wall1 = p.createMultiBody(baseCollisionShapeIndex=wall_coll1,
+                                      baseVisualShapeIndex=vis1,
+                                      basePosition=[-2., -6., 0])
+            wall2 = p.createMultiBody(baseCollisionShapeIndex=wall_coll2,
+                                      baseVisualShapeIndex=vis2,
+                                      basePosition=[-4.25, 5., 0])
+            wall3 = p.createMultiBody(baseCollisionShapeIndex=wall_coll3,
+                                      baseVisualShapeIndex=vis3,
+                                      basePosition=[7., 6., 0])
+            wall4 = p.createMultiBody(baseCollisionShapeIndex=wall_coll4,
+                                      baseVisualShapeIndex=vis4,
+                                      basePosition=[1.75, -8., 0])
+            wall5 = p.createMultiBody(baseCollisionShapeIndex=wall_coll5,
+                                      baseVisualShapeIndex=vis5,
+                                      basePosition=[4.75, -4.5, 0])
+            wall6 = p.createMultiBody(baseCollisionShapeIndex=wall_coll6,
+                                      baseVisualShapeIndex=vis6,
+                                      basePosition=[1.75, 3.5, 0])
+            wall7 = p.createMultiBody(baseCollisionShapeIndex=wall_coll7,
+                                      baseVisualShapeIndex=vis7,
+                                      basePosition=[4.75, 6.5, 0])
 
 
             self.walls_id += [wall1, wall2, wall3, wall4]

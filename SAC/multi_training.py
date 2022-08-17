@@ -77,32 +77,29 @@ def start_training(env, name, timesteps, ent, feat, layer_dim=(3, 256)):
 log_dir = "tmp/"
 #envs = ["straight", "cross", "bend"]
 #envs = ["H", "cross_narrow", "straight_narrow"]
-envs = ["H", "X_large", "I_large"]
+#envs = ["H", "X_large", "I_large"]
+envs = ["Env-I", "Env-X", "H"]
 #envs = ["H", "X_large", "H", "X_large"]
 #envs = ["X_large", "X_large", "X_large", "X_large"]
-num_peds = [4, 3, 4, 4]
+num_peds = [2, 3, 4]
 env_select = 1
 num_envs = 3  # Number of processes to use
 # Create the vectorized environment
 env = SubprocVecEnv([make_env(i, envs, num_peds) for i in range(num_envs)], start_method='fork')
-#env = VecFrameStack(env, n_stack=4, channels_order="last")
 env = VecMonitor(env, log_dir)
-timesteps = 1_500_000
+timesteps = 3_000_000
 #name = "X_512net_2peds4nodes_auto_maxpooling"
 
-# start_training(env, "XL_256net_434peds8nodes_orca_00fix_001ent_6wp_ero_maxpooling", timesteps,
-#                 ent=0.01, feat=LargeMaxpoolExtractor)
 
-start_training(env, "XL_256net_434peds8nodes_orca_00fix_autoent_6wp_ero_maxpooling", timesteps,
-                ent='auto', feat=LargeMaxpoolExtractor)
+start_training(env, "IXH_256net_3scan_234peds5nodes_orca_00fix_001ent_4wp_maxpooling", timesteps,
+                ent=0.01, feat=LargeMaxpoolExtractor)
+
+start_training(env, "IXH_256net_3scan_234peds5nodes_orca_00fix_003ent_4wp_maxpooling", timesteps,
+                ent=0.03, feat=LargeMaxpoolExtractor)
+
+start_training(env, "IXH_256net_3scan_234peds5nodes_orca_00fix_0005ent_4wp_maxpooling", timesteps,
+                ent=0.005, feat=LargeMaxpoolExtractor)
 
 # start_training(env, "X_256net_2peds6nodes_orca_00fix_autoent_4wp_maxpooling", timesteps,
 #                 ent='auto', feat=LargeMaxpoolExtractor)
-
-
-
-# start_training(env, "3_512net_432peds4nodes_autoent_meanpooling", timesteps,
-#                ent='auto', feat=LargeMeanpoolExtractor, layer_dim=(3, 512))
-# start_training(env, "3_512net_432peds4nodes_autoent_maxpooling", timesteps,
-#                ent='auto', feat=LargeMaxpoolExtractor, layer_dim=(3, 512))
 

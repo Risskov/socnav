@@ -26,8 +26,9 @@ class SocialNavRandomTask(PointNavRandomTask):
         self.record = self.config.get('record', False)
         # Detect pedestrian collision
         #self.termination_conditions.append(PedestrianCollision(self.config))
-        self.reward_functions.append(TimestepReward(self.config))
-        #self.reward_functions.append(PersonalSpaceReward(self.config))
+        # self.reward_functions.append(PersonalSpaceReward(self.config))
+
+        #self.reward_functions.append(TimestepReward(self.config))
         self.reward_functions.append(WaypointReward(self.config))
 
         self.use_orca = self.config.get('use_orca', False)
@@ -176,7 +177,7 @@ class SocialNavRandomTask(PointNavRandomTask):
         pedestrians = []
         orca_pedestrians = []
         for i in range(self.num_pedestrians):
-            ped = Pedestrian(style=(i % 3), visual_only=False)
+            ped = Pedestrian(style=(i+1 % 3), visual_only=False)
             env.simulator.import_object(ped)
             pedestrians.append(ped)
             orca_ped = self.orca_sim.addAgent((0, 0))
@@ -272,8 +273,8 @@ class SocialNavRandomTask(PointNavRandomTask):
         """
         self.pedestrian_waypoints = []
         for ped_id, (ped, orca_ped) in enumerate(zip(self.pedestrians, self.orca_pedestrians)):
-            initial_pos = self.sample_initial_pos(env, ped_id)
-            #initial_pos = np.array([-2, -3, 0])  # eval
+            #initial_pos = self.sample_initial_pos(env, ped_id)
+            initial_pos = np.array([2, ped_id*1.8, 0])  # eval
             initial_orn = p.getQuaternionFromEuler(ped.default_orn_euler)
             waypoints = self.sample_new_target_pos(env, initial_pos)
             ped.set_position_orientation(initial_pos, initial_orn)
@@ -412,7 +413,8 @@ class SocialNavRandomTask(PointNavRandomTask):
             desired_vel = next_goal - current_pos[0:2]
             desired_vel = desired_vel / \
                 np.linalg.norm(desired_vel) * self.orca_max_speed
-            self.orca_sim.setAgentPrefVelocity(orca_ped, tuple(desired_vel))
+            #self.orca_sim.setAgentPrefVelocity(orca_ped, tuple(desired_vel))
+            self.orca_sim.setAgentPrefVelocity(orca_ped, (0, 0))  # eval
         #self.orca_sim.setAgentPrefVelocity(orca_ped, (0, 0)) # testing
         self.orca_sim.doStep()
 
@@ -641,6 +643,28 @@ class SocialNavRandomTask(PointNavRandomTask):
         else:
             ped_positions = np.hstack(ped_positions)
             ped_velocities = np.hstack(ped_velocities)
+        ped_obs = list(zip(ped_positions[0::2], ped_positions[1::2], ped_velocities[0::2], ped_velocities[1::2]))
+        #around
+        return ped_obs
+
+    def get_pedestrians_obs_test(self, env): # 2D array of pedestrians and pos+vel
+        ped_positions = [self.global_to_local(env, ped.get_position())[:2] for ped in self.pedestrians]
+        ped_positions = [cartesian_to_polar(ped_pos[0], ped_pos[1]) for ped_pos in ped_positions]
+        print(sorted(range(len(ped_positions)), key=lambda k: ped_positions[k]))
+        ped_positions.sort(key=lambda tup: tup[0])
+
+        print(ped_positions)
+        ped_velocities = [rotate_vector_3d(self.orca_sim.getAgentVelocity(orca_ped) + (0,), *env.robots[0].get_rpy())
+                          for orca_ped in self.orca_pedestrians]
+        ped_velocities = [cartesian_to_polar(ped_vel[0], ped_vel[1]) for ped_vel in ped_velocities]
+
+        for i in range(self.num_pedestrians, self.max_num_pedestrians):
+            ped_positions.append([0, 0])
+            ped_velocities.append([0, 0])
+        # sort by pedestrian order
+        ped_positions = self.sort_list(ped_positions)
+        ped_velocities = self.sort_list(ped_velocities)
+
         ped_obs = list(zip(ped_positions[0::2], ped_positions[1::2], ped_velocities[0::2], ped_velocities[1::2]))
         #around
         return ped_obs

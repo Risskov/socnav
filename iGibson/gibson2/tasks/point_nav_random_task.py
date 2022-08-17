@@ -85,9 +85,10 @@ class PointNavRandomTask(PointNavFixedTask):
         # removed cached state to prevent memory leak
         p.removeState(state_id)
 
-        self.target_pos = target_pos
+        #self.target_pos = target_pos
         self.initial_pos = initial_pos
-        self.initial_orn = initial_orn
-        #self.initial_pos = np.array([-4, -4, 0])
+        #self.initial_orn = initial_orn
+        self.target_pos = np.array([6, 1, 0])
+        self.initial_pos = np.array([0, 0, 0])
         #self.initial_orn = np.array([0,0,np.pi*3/4 ])
         super(PointNavRandomTask, self).reset_agent(env)
